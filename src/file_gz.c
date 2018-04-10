@@ -177,6 +177,88 @@ static int header_check_gz(const unsigned char *buffer, const unsigned int buffe
     file_recovery_new->min_filesize=22;
     file_recovery_new->time=le32(gz->mtime);
     file_recovery_new->file_rename=&file_rename_gz;
+    /* START high-throughput sequencing file formats https://github.com/samtools/hts-specs*/
+    if(memcmp(buffer_uncompr, "SAM\tVN:", 7)==0)
+    {
+      /* SAM format (text file but gzip/bgzip compressed) */
+      // TODO: also include in the text files
+      file_recovery_new->extension="sam.gz";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "BAM\1", 4)==0)
+    {
+      /* BAM format v1 - always bgzipped */
+      file_recovery_new->extension="bam";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "CRAM\1", 4)==0)
+    {
+      /* CRAM format v1 - always bgzipped */
+      file_recovery_new->extension="cram";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "CRAM\2", 4)==0)
+    {
+      /* CRAM format v2 - always bgzipped */
+      file_recovery_new->extension="cram";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "CRAM\3", 4)==0)
+    {
+      /* CRAM format v3 - always bgzipped */
+      file_recovery_new->extension="cram";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "BAI\1", 4)==0)
+    {
+      /* BAM .bai index format - always bgzipped */
+      file_recovery_new->extension="bai";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "CSI\1", 4)==0)
+    {
+      /* BAM .csi index format - always bgzipped */
+      file_recovery_new->extension="csi";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "TBI\1", 4)==0)
+    {
+      /* Tabix index format - always bgzipped */
+      file_recovery_new->extension="tbi";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "##fileformat=VCF", 16)==0)
+    {
+      /* VCF format (text file but gzip/bgzip compressed) */
+      // TODO: also include in the text files
+      file_recovery_new->extension="vcf.gz";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "BCF\1", 4)==0)
+    {
+      /* BCF format v1 - always bgzipped */
+      file_recovery_new->extension="bcf";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "BCF\2", 4)==0)
+    {
+      /* BCF format v2 - always bgzipped */
+      file_recovery_new->extension="bcf";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "BCF\3", 4)==0)
+    {
+      /* BCF format v3 - always bgzipped */
+      file_recovery_new->extension="bcf";
+      return 1;
+    }
+    if(memcmp(buffer_uncompr, "BCF\4", 4)==0)
+    {
+      /* BCF format v4 - always bgzipped */
+      file_recovery_new->extension="bcf";
+      return 1;
+    }
+    /** END high-throughput sequencing file formats https://github.com/samtools/hts-specs */
     if(memcmp(buffer_uncompr, "PVP ", 4)==0)
     {
       /* php Video Pro */
